@@ -6,32 +6,26 @@ import Image from "next/image";
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // 1. O container tem 250vh. Isso define o "tempo" da animação.
+  // Hook para capturar o progresso do scroll apenas dentro desta div gigante
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
+    offset: ["start start", "end start"], // Começa no topo, termina quando o topo da div sair da tela
   });
 
-  // === ANIMAÇÕES ===
+  // Transformações baseadas no scroll (0 a 1)
   
-  // A imagem P&B (Grayscale) some gradualmente até 50% do scroll
+  // 1. A imagem P&B vai sumindo (revelando a colorida por trás)
   const grayscaleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   
-  // O Texto aumenta de tamanho (Zoom In)
-  const textScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.5]);
+  // 2. O texto se move levemente e muda de escala
+  const textScale = useTransform(scrollYProgress, [0, 0.6], [1, 4.5]);
+  const textOpacity = useTransform(scrollYProgress, [0.4, 0.6], [1, 0]); // Texto some ao dar zoom excessivo
   
-  // AQUI O AJUSTE: O texto NÃO SOME mais no meio (0.6). 
-  // Ele fica visível até quase o final (0.9), quando a próxima seção já estará cobrindo.
-  const textOpacity = useTransform(scrollYProgress, [0.8, 1], [1, 0]);
-  
-  // Movimento vertical leve do texto para dar dinamismo
-  const textY = useTransform(scrollYProgress, [0, 0.5], ["0%", "10%"]);
+  // 3. Efeito de textura/mask no texto (O texto começa sólido e vira vazado/máscara)
+  const textY = useTransform(scrollYProgress, [0, 0.5], ["0%", "20%"]);
 
   return (
-    // Esta div define a altura física no DOM. Empurra o próximo conteúdo para baixo.
-    <section ref={containerRef} className="h-[250vh] relative bg-neutral-950 z-0">
-      
-      {/* Esta div interna é quem TRAVA na tela enquanto o pai (250vh) scrolla */}
+    <section ref={containerRef} className="h-[250vh] relative bg-neutral-950">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
         
         {/* === LAYER 1: Imagem Colorida (Base) === */}
@@ -43,11 +37,11 @@ export function Hero() {
             className="object-cover object-center"
             priority
           />
-          {/* Overlay gradiente para garantir leitura */}
-          <div className="absolute inset-0 bg-neutral-950/30" />
+          {/* Overlay gradiente para garantir leitura do footer da imagem se necessário */}
+          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
         </div>
 
-        {/* === LAYER 2: Imagem P&B (Cobre a colorida e some) === */}
+        {/* === LAYER 2: Imagem P&B (Cobre a colorida e some com scroll) === */}
         <motion.div 
           style={{ opacity: grayscaleOpacity }}
           className="absolute inset-0 z-10 pointer-events-none"
@@ -61,7 +55,7 @@ export function Hero() {
           />
         </motion.div>
 
-        {/* === LAYER 3: Texto (Agora fica visível junto com a cor) === */}
+        {/* === LAYER 3: Texto Tipográfico === */}
         <motion.div 
           style={{ scale: textScale, opacity: textOpacity, y: textY }}
           className="relative z-20 text-center mix-blend-overlay"
@@ -73,13 +67,21 @@ export function Hero() {
           </h1>
         </motion.div>
 
-        {/* Info Extra (Só para decorar) */}
+        {/* === LAYER 4: Detalhes Técnicos (Overlay fixo que não dá zoom) === */}
         <motion.div 
           style={{ opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]) }}
           className="absolute bottom-12 left-12 z-30 text-neutral-200 hidden md:block"
         >
           <p className="font-mono text-xs mb-1">LOCALIZAÇÃO</p>
           <p className="font-bold">BRASIL</p>
+        </motion.div>
+
+        <motion.div 
+          style={{ opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]) }}
+          className="absolute bottom-12 right-12 z-30 text-right text-neutral-200 hidden md:block"
+        >
+          <p className="font-mono text-xs mb-1">STACK PRINCIPAL</p>
+          <p className="font-bold">NEXT.JS / N8N / TAILWIND</p>
         </motion.div>
 
       </div>

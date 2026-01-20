@@ -1,13 +1,13 @@
 "use client";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
-import { ArrowUpRight, Github, Smartphone, Layers, Globe } from "lucide-react";
+import { ArrowUpRight, Github, Smartphone, Globe } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image"; // Importante para o background imersivo
+import Image from "next/image";
 import { BrowserFrame } from "@/components/ui/BrowserFrame";
 import { MobileFrame } from "@/components/ui/MobileFrame";
 
-// === DADOS DOS PROJETOS ===
+// ... (MANTENHA A CONSTANTE PROJECTS IGUAL AO ANTERIOR) ...
 const PROJECTS = [
   {
     id: "study",
@@ -19,8 +19,8 @@ const PROJECTS = [
     image: "/studyplan-print.png", 
     link: "https://studyplanbr.vercel.app/",
     repo: "https://github.com/paulos19/studyplanbr",
-    color: "#10b981", // Emerald
-    direction: "base" // O primeiro é a base
+    color: "#10b981", 
+    direction: "base"
   },
   {
     id: "davi",
@@ -32,8 +32,8 @@ const PROJECTS = [
     image: "/davi-print.png", 
     link: "https://davi-chi.vercel.app/",
     repo: "https://github.com/paulos19/davi",
-    color: "#3b82f6", // Blue
-    direction: "from-right" // Entra da direita
+    color: "#3b82f6", 
+    direction: "from-right"
   },
   {
     id: "zaca",
@@ -42,11 +42,11 @@ const PROJECTS = [
     title: "Zacaplace",
     description: "Marketplace Multi-vendor. Dashboard administrativo, Stripe Connect e sistema de reviews.",
     tags: ["Stripe", "NextAuth", "Admin"],
-    image: "/zaca-print.png", 
+    image: "/1.jpg", 
     link: "#",
     repo: "https://github.com/paulos19/make-marketplace",
-    color: "#a855f7", // Purple
-    direction: "from-left" // Entra da esquerda (Alternado)
+    color: "#a855f7", 
+    direction: "from-left"
   },
   {
     id: "lumiere",
@@ -58,8 +58,8 @@ const PROJECTS = [
     image: "/lumiere-print.png", 
     link: "#",
     repo: "https://github.com/paulos19/lumieres",
-    color: "#f59e0b", // Amber
-    direction: "from-right" // Entra da direita
+    color: "#f59e0b", 
+    direction: "from-right"
   },
   {
     id: "readeek",
@@ -68,18 +68,17 @@ const PROJECTS = [
     title: "Readeek Mobile",
     description: "Super App Literário. Combina leitor EPUB avançado, gamificação e rede social nativa.",
     tags: ["React Native", "Expo", "Zustand"],
-    image: "/readeek-print.jpeg", 
+    image: "/readeek-print.png", 
     link: "#",
     repo: "https://github.com/paulos19/readeek-mobile",
-    color: "#8b5cf6", // Violet
-    direction: "from-bottom" // Grand Finale (De baixo)
+    color: "#8b5cf6", 
+    direction: "from-bottom"
   }
 ];
 
 export function ProjectShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 600vh para garantir tempo de leitura e transição suave para 5 projetos
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"], 
@@ -88,7 +87,6 @@ export function ProjectShowcase() {
   return (
     <section ref={containerRef} className="relative h-[600vh] bg-neutral-950">
       
-      {/* Título Flutuante Persistente */}
       <div className="absolute top-0 left-0 right-0 h-32 z-50 flex items-center justify-center pointer-events-none">
          <div className="bg-neutral-950/50 backdrop-blur-md px-6 py-2 rounded-full border border-white/5 mt-8">
             <span className="text-emerald-500 font-mono text-xs tracking-[0.3em] uppercase font-bold">
@@ -99,12 +97,10 @@ export function ProjectShowcase() {
 
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
         
-        {/* === PROJETO 1 (BASE - Estático no fundo) === */}
         <div className="absolute inset-0 w-full h-full z-0">
           <ProjectCard project={PROJECTS[0]} />
         </div>
 
-        {/* === PROJETO 2 (Davi - Vem da Direita) === */}
         <ProjectOverlay 
             project={PROJECTS[1]} 
             progress={scrollYProgress} 
@@ -112,7 +108,6 @@ export function ProjectShowcase() {
             zIndex={10}
         />
 
-        {/* === PROJETO 3 (Zacaplace - Vem da Esquerda) === */}
         <ProjectOverlay 
             project={PROJECTS[2]} 
             progress={scrollYProgress} 
@@ -120,7 +115,6 @@ export function ProjectShowcase() {
             zIndex={20}
         />
 
-        {/* === PROJETO 4 (Lumiere - Vem da Direita) === */}
         <ProjectOverlay 
             project={PROJECTS[3]} 
             progress={scrollYProgress} 
@@ -128,11 +122,11 @@ export function ProjectShowcase() {
             zIndex={30}
         />
 
-        {/* === PROJETO 5 (Readeek - Vem de Baixo) === */}
+        {/* AJUSTE AQUI: Termina em 0.85 para dar tempo da próxima seção entrar sem colisão visual */}
         <ProjectOverlay 
             project={PROJECTS[4]} 
             progress={scrollYProgress} 
-            range={[0.7, 0.9]} 
+            range={[0.7, 0.85]} 
             zIndex={40}
         />
 
@@ -141,7 +135,7 @@ export function ProjectShowcase() {
   );
 }
 
-// === COMPONENTE DE TRANSIÇÃO (O Motor) ===
+// ... (MANTENHA OS COMPONENTES ProjectOverlay E ProjectCard IGUAIS) ...
 function ProjectOverlay({ 
     project, 
     progress, 
@@ -156,9 +150,8 @@ function ProjectOverlay({
   const localProgress = useTransform(progress, range, [0, 1]);
   const opacity = useTransform(localProgress, [0, 0.1], [0, 1]);
 
-  // Lógica de Direção Alternada
-  let xInput = ["0%", "0%"]; // Default
-  let yInput = ["0%", "0%"]; // Default
+  let xInput = ["0%", "0%"];
+  let yInput = ["0%", "0%"];
 
   if (project.direction === "from-right") {
     xInput = ["100%", "0%"];
@@ -171,7 +164,6 @@ function ProjectOverlay({
   const x = useTransform(localProgress, [0, 1], xInput);
   const y = useTransform(localProgress, [0, 1], yInput);
   
-  // Sombra dinâmica baseada na direção para dar profundidade
   const shadowClass = project.direction === "from-left" 
     ? "shadow-[50px_0_100px_rgba(0,0,0,0.8)] border-r" 
     : "shadow-[-50px_0_100px_rgba(0,0,0,0.8)] border-l";
@@ -186,7 +178,6 @@ function ProjectOverlay({
   );
 }
 
-// === CARD DE APRESENTAÇÃO (O Visual) ===
 function ProjectCard({ 
   project, 
   progress 
@@ -195,28 +186,19 @@ function ProjectCard({
   progress?: MotionValue<number>
 }) {
   const isMobile = project.type === "mobile";
-  const isReversed = project.direction === "from-left"; // Inverte layout se vier da esquerda
+  const isReversed = project.direction === "from-left";
 
-  // ANIMAÇÕES INTERNAS (Só ativas se tiver progresso/transição)
-  
-  // 1. O Background Imersivo começa com muito zoom e desfocado
   const bgScale = progress ? useTransform(progress, [0, 1], [1.5, 1.1]) : 1.1;
   const bgBlur = progress ? useTransform(progress, [0, 0.8], ["blur(20px)", "blur(10px)"]) : "blur(10px)";
   
-  // 2. O Texto entra com delay
   const textOpacity = progress ? useTransform(progress, [0.4, 0.8], [0, 1]) : 1;
   const textY = progress ? useTransform(progress, [0.4, 0.8], [50, 0]) : 0;
 
-  // 3. O Frame principal flutua levemente
   const frameY = progress ? useTransform(progress, [0, 1], [100, 0]) : 0;
 
   return (
     <div className="relative w-full h-full flex flex-col justify-center overflow-hidden">
       
-      {/* === BACKGROUND IMERSIVO (NOVA CAMADA) === 
-          A imagem do projeto preenche o fundo, mas escurecida e borrada.
-          Isso cria a sensação de "fazer parte da sessão".
-      */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div 
           style={{ scale: bgScale, filter: bgBlur }}
@@ -228,14 +210,12 @@ function ProjectCard({
              fill 
              className="object-cover" 
            />
-           {/* Gradiente de Fusão com o fundo preto */}
            <div className="absolute inset-0 bg-neutral-950/50 mix-blend-multiply" />
            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
            <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-transparent to-neutral-950" />
         </motion.div>
       </div>
 
-      {/* Número de Fundo (Marca d'água) */}
       <motion.div 
         style={{ opacity: textOpacity }}
         className={`absolute bottom-0 text-[30vw] font-serif font-bold text-white/[0.02] select-none leading-none pointer-events-none z-0
@@ -245,20 +225,15 @@ function ProjectCard({
         {project.number}
       </motion.div>
 
-      {/* Conteúdo Principal */}
       <div className="container relative z-10 max-w-7xl mx-auto px-6 h-full flex items-center">
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 w-full items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}>
           
-          {/* === COLUNA DE TEXTO === 
-              Alterna de lado visualmente se for 'from-left'
-          */}
           <motion.div 
             style={{ opacity: textOpacity, y: textY }}
             className={`space-y-8 flex flex-col justify-center ${isReversed ? 'lg:order-2 lg:text-left' : 'lg:order-1 lg:text-left'} order-2 text-center`}
           >
             <div className="space-y-4">
               <div className={`flex flex-wrap gap-2 justify-center ${isReversed ? 'lg:justify-start' : 'lg:justify-start'}`}>
-                {/* Ícone de Tipo */}
                 <span 
                   className="px-3 py-1 rounded-full text-xs font-mono tracking-wider flex items-center gap-2 border bg-black/50 backdrop-blur-md"
                   style={{ borderColor: `${project.color}40`, color: project.color }}
@@ -295,14 +270,12 @@ function ProjectCard({
             </div>
           </motion.div>
 
-          {/* === COLUNA VISUAL (FRAME) === */}
           <motion.div 
              style={{ y: frameY }}
              className={`relative w-full flex items-center justify-center lg:h-[80vh] perspective-1000 ${isReversed ? 'lg:order-1' : 'lg:order-2'} order-1`}
           >
              <div className={`relative transform transition-all duration-700 hover:scale-[1.02] ${isMobile ? 'w-[300px]' : 'w-full max-w-2xl'}`}>
                 
-                {/* Glow atrás do frame baseado na cor do projeto */}
                 <div 
                   className="absolute inset-0 blur-[100px] opacity-40 rounded-full -z-10"
                   style={{ backgroundColor: project.color }}

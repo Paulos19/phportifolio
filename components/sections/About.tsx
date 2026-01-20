@@ -1,24 +1,23 @@
 "use client";
 import { motion } from "framer-motion";
-import { 
-  Cpu, Code2, Zap, Database, Layout, Terminal, GraduationCap
-} from "lucide-react";
+import { Cpu, Code2, Zap, Database, Layout, Terminal, GraduationCap } from "lucide-react";
 
 export function About() {
-  // Removemos o useScroll complexo aqui. Deixamos o CSS sticky do page.tsx fazer o trabalho de empilhar.
-  
   return (
-    <section id="sobre" className="relative min-h-screen bg-neutral-950 flex items-center justify-center py-20">
+    // Removida altura fixa/sticky daqui. O pai no page.tsx controla isso.
+    // Adicionado padding vertical generoso para centralizar visualmente.
+    <section id="sobre" className="relative w-full min-h-screen flex items-center justify-center py-24 px-4 bg-neutral-950">
       
-      <div className="container px-4 md:px-6 relative z-10 w-full max-w-6xl">
+      <div className="container relative z-10 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
-          {/* Coluna Esquerda: Título/Impacto */}
+          {/* Coluna Esquerda: Impacto */}
           <div className="space-y-8">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
               className="space-y-4"
             >
               <div className="flex items-center gap-3">
@@ -40,17 +39,18 @@ export function About() {
                initial={{ opacity: 0 }}
                whileInView={{ opacity: 1 }}
                transition={{ delay: 0.2, duration: 0.8 }}
+               viewport={{ once: true }}
                className="grid grid-cols-2 gap-4"
             >
               <Card 
                 icon={<GraduationCap className="w-5 h-5 text-purple-400" />}
                 title="Formação"
-                desc="Cursando ADS. Engenharia de Software."
+                desc="Cursando ADS. Foco em Engenharia de Software."
               />
               <Card 
                 icon={<Zap className="w-5 h-5 text-yellow-400" />}
-                title="Evolução"
-                desc="De 0 a Full Stack em 2 anos."
+                title="Performance"
+                desc="Aplicações otimizadas para alta escala."
               />
             </motion.div>
           </div>
@@ -60,12 +60,13 @@ export function About() {
              initial={{ opacity: 0, x: 20 }}
              whileInView={{ opacity: 1, x: 0 }}
              transition={{ delay: 0.4, duration: 0.8 }}
-             className="space-y-8 bg-white/5 p-8 rounded-2xl border border-white/5"
+             viewport={{ once: true }}
+             className="space-y-8 bg-white/5 p-8 rounded-2xl border border-white/5 backdrop-blur-sm"
           >
              <p className="text-lg text-neutral-400 leading-relaxed">
-              Minha trajetória técnica começou oficialmente em <strong className="text-white">2023</strong>. 
-              Desde então, mergulhei fundo na intersecção entre interfaces modernas e lógica de backend complexa.
-              Não sou apenas um programador de telas; trago uma visão estrutural para cada linha de código.
+              Minha jornada técnica começou em <strong className="text-white">2023</strong>. 
+              Desde então, mergulhei na arquitetura de sistemas, unindo interfaces fluidas com backends robustos.
+              Não apenas escrevo código; construo soluções que resolvem problemas reais.
             </p>
 
             <div className="space-y-4 pt-4 border-t border-white/5">
@@ -87,7 +88,6 @@ export function About() {
   );
 }
 
-// Componentes Auxiliares (Mantidos)
 function Card({ icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
     <div className="p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
