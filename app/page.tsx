@@ -1,7 +1,6 @@
-// app/page.tsx
 "use client";
 import { useEffect, useRef } from "react";
-import Lenis from 'lenis'
+import Lenis from 'lenis';
 import { useScroll } from "framer-motion";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -9,54 +8,59 @@ import { Hero } from "@/components/sections/hero";
 import { About } from "@/components/sections/about";
 import { Stack } from "@/components/sections/stack";
 
-// Importe seus projetos
 import { ProjectLumiere } from "@/components/sections/projects/lumiere";
 import { ProjectStudyPlan } from "@/components/sections/projects/study-plan";
 import { ProjectZacaplace } from "@/components/sections/projects/zacaplace";
 import { ProjectDavi } from "@/components/sections/projects/davi";
 import { ProjectReadeek } from "@/components/sections/projects/readeek";
 
-// Importe o Wrapper que criamos no Passo 1
 import { ProjectCard } from "@/components/ui/project-card";
 
-// Configure a lista e as cores de fundo de cada card
+// Novos imports
+import { Testimonials } from "@/components/sections/Testimonials";
+import { Contact } from "@/components/sections/Contact";
+import { Footer } from "@/components/layout/Footer";
+
 const projects = [
   {
     component: <ProjectLumiere />,
-    color: "#0A1410" // Cor do fundo do Lumiere
+    color: "#0A1410",
+    direction: "none" as const
   },
   {
     component: <ProjectStudyPlan />,
-    color: "#F0F2F5" // Cor do fundo do Study Plan
+    color: "#F0F2F5",
+    direction: "right" as const
   },
   {
     component: <ProjectZacaplace />,
-    color: "#F3F4F6" // Cor do fundo do Zacaplace
+    color: "#F3F4F6",
+    direction: "left" as const
   },
   {
     component: <ProjectDavi />,
-    color: "#F8FAFC" // Cor do fundo do Davi
+    color: "#F8FAFC",
+    direction: "right" as const
   },
   {
     component: <ProjectReadeek />,
-    color: "#09090b" // Cor do fundo do Readeek
+    color: "#09090b",
+    direction: "left" as const
   }
 ];
 
 export default function Home() {
   const container = useRef(null);
   
-  // Smooth Scroll (Opcional, mas melhora muito o efeito de sticky)
-  useEffect( () => {
-    const lenis = new Lenis()
+  useEffect(() => {
+    const lenis = new Lenis();
     function raf(time: any) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
+      lenis.raf(time);
+      requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf)
-  }, [])
+    requestAnimationFrame(raf);
+  }, []);
 
-  // Hook de scroll global para a seção de projetos
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ['start start', 'end end']
@@ -70,21 +74,20 @@ export default function Home() {
       <About />
       <Stack />
 
-      {/* --- SESSÃO DE PROJETOS (Main Container) --- */}
-      {/* Importante: mt-0 ou ajustado para não ter buraco entre stack e projetos */}
-      <section ref={container} className="relative mt-[10vh] mb-[10vh]">
+      {/* --- SESSÃO DE PROJETOS --- */}
+      <section ref={container} className="relative h-[500vh] bg-zinc-950">
         {projects.map((project, i) => {
-          // Cálculo de escala: O primeiro card diminui mais, o último fica tamanho real (1)
-          const targetScale = 1 - ( (projects.length - i) * 0.05 );
-          
+          const start = i === 0 ? 0 : (i - 1) * 0.25;
+          const end = i === 0 ? 1 : i * 0.25;
+
           return (
             <ProjectCard 
               key={i} 
               i={i} 
               progress={scrollYProgress}
-              range={[i * 0.25, 1]}
-              targetScale={targetScale}
+              range={[start, end]}
               color={project.color}
+              direction={project.direction}
             >
               {project.component}
             </ProjectCard>
@@ -92,14 +95,16 @@ export default function Home() {
         })}
       </section>
 
-      {/* Footer / Próximos Passos */}
-      <section className="relative z-10 bg-zinc-950 py-24 flex items-center justify-center border-t border-white/10 shadow-[0_-50px_100px_rgba(0,0,0,0.5)]">
-        <div className="text-center">
-          <h2 className="text-zinc-500 text-xl mb-4">Gostou do que viu?</h2>
-          <p className="text-zinc-400 text-sm mb-8">Entre em contato para construirmos algo juntos.</p>
-          <span className="text-zinc-600 text-xs">© 2026 Paulo Henrique.</span>
-        </div>
-      </section>
+      {/* --- NOVAS SESSÕES --- */}
+      
+      {/* 1. Testemunhas (Dark) - Conecta com o fundo dark do Readeek */}
+      <Testimonials />
+
+      {/* 2. Contato (Light) - Contraste forte para chamar atenção */}
+      <Contact />
+
+      {/* 3. Footer (Dark) - Fechamento elegante */}
+      <Footer />
 
     </main>
   );

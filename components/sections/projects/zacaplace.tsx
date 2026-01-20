@@ -19,8 +19,8 @@ export function ProjectZacaplace() {
   const yContent = useTransform(scrollYProgress, [0, 1], ["0%", "-5%"]);
 
   return (
-    /* INICIO DA SECTION - Fundo Gelo (#F3F4F6) */
-    <section className="w-full overflow-hidden bg-[#F3F4F6] text-[#1A1A1A]">
+    /* FIX ESTRUTURAL: 'relative h-full' para o card do baralho */
+    <section className="relative w-full h-full overflow-hidden bg-[#F3F4F6] text-[#1A1A1A]">
       
       <div ref={containerRef} className="relative h-full w-full flex items-center">
         
@@ -33,15 +33,23 @@ export function ProjectZacaplace() {
             src="/zaca-print.png"
             alt="Zacaplace Marketplace"
             fill
-            className="object-cover object-left md:object-center opacity-40 blur-[2px] md:blur-0"
+            /* FIX CONTRASTE 1: Opacidade 70% e Blur reduzido para destacar o print */
+            className="object-cover object-left md:object-center opacity-70 blur-[1px]"
             priority
           />
+          
+          /* FIX CONTRASTE 2: Overlay Escuro.
+             Essencial para garantir que o texto branco/escuro tenha leitura
+             sobre qualquer imagem colorida do marketplace. */
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent mix-blend-multiply" />
         </motion.div>
 
-        {/* === LAYER 2: GRADIENTES === */}
-        {/* Gradiente Verde Lima sutil na base */}
+        {/* === LAYER 2: GRADIENTES (Fade para o fundo Gelo) === */}
+        
+        {/* Gradiente Verde Lima sutil na base (identidade do projeto) */}
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#F3F4F6] via-[#F3F4F6]/85 to-transparent" />
-        {/* Gradiente lateral para legibilidade */}
+        
+        {/* Gradiente lateral para legibilidade do texto à esquerda */}
         <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#F3F4F6] via-[#F3F4F6]/95 to-transparent md:w-[75%]" />
 
         {/* === LAYER 3: CONTEÚDO === */}
@@ -54,7 +62,7 @@ export function ProjectZacaplace() {
             {/* Tag / Header */}
             <div className="flex items-center gap-4 mb-6">
               {/* Rosa Magenta para destaque e contraste */}
-              <span className="px-3 py-1 rounded-full border border-[#D94892]/40 bg-[#D94892]/10 text-[#D94892] text-xs font-mono tracking-widest uppercase">
+              <span className="px-3 py-1 rounded-full border border-[#D94892]/40 bg-[#D94892]/10 text-[#D94892] text-xs font-mono tracking-widest uppercase backdrop-blur-md">
                 Case Study 003
               </span>
               <div className="h-[1px] w-12 md:w-24 bg-[#D94892]/40" />
@@ -84,7 +92,7 @@ export function ProjectZacaplace() {
                     { name: "E-commerce", icon: ShoppingBag },
                     { name: "Payments", icon: CreditCard },
                   ].map((tech, i) => (
-                    <div key={i} className="flex items-center gap-2 px-4 py-2 bg-white border border-[#1A1A1A]/10 rounded-lg text-[#1A1A1A] text-xs md:text-sm hover:border-[#76C859] transition-colors cursor-default shadow-sm">
+                    <div key={i} className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-[#1A1A1A]/10 rounded-lg text-[#1A1A1A] text-xs md:text-sm hover:border-[#76C859] transition-colors cursor-default shadow-sm">
                       <tech.icon size={14} className="text-[#76C859]" />
                       {tech.name}
                     </div>

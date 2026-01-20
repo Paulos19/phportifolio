@@ -19,8 +19,11 @@ export function ProjectLumiere() {
   const yContent = useTransform(scrollYProgress, [0, 1], ["0%", "-5%"]);
 
   return (
-    /* INICIO DA SECTION */
-    <section className="w-full overflow-hidden bg-[#0A1410]">
+    /* FIX ESTRUTURAL: 
+       - Adicionado 'relative h-full' para ocupar 100% do card pai.
+       - Mantido bg-[#0A1410] (Dark Theme).
+    */
+    <section className="relative w-full h-full overflow-hidden bg-[#0A1410]">
       
       <div ref={containerRef} className="relative h-full w-full flex items-center">
         
@@ -33,6 +36,8 @@ export function ProjectLumiere() {
             src="/project-lumiere.png"
             alt="Lumiere Project Banner"
             fill
+            /* Mantive opacity-50 pois o fundo é escuro, garantindo 
+               que a imagem apareça sem brigar com o texto branco */
             className="object-cover object-center opacity-50"
             priority
           />

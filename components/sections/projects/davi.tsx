@@ -19,8 +19,10 @@ export function ProjectDavi() {
   const yContent = useTransform(scrollYProgress, [0, 1], ["0%", "-5%"]);
 
   return (
-    /* INICIO DA SECTION - Fundo Gelo Neutro (#F8FAFC) */
-    <section className="w-full overflow-hidden bg-[#F8FAFC] text-[#0F172A]">
+    /* FIX ESTRUTURAL: Adicionado 'h-full relative' para ocupar o card inteiro.
+      FIX VISUAL: Mantido o fundo Gelo (#F8FAFC) 
+    */
+    <section className="relative w-full h-full overflow-hidden bg-[#F8FAFC] text-[#0F172A]">
       
       <div ref={containerRef} className="relative h-full w-full flex items-center">
         
@@ -33,24 +35,27 @@ export function ProjectDavi() {
             src="/davi-print.png"
             alt="Davi CRM Dashboard"
             fill
-            // AJUSTE 1: Aumentei a opacidade (opacity-60) para o banner aparecer mais
-            // Mantive um blur leve para não brigar com o texto
-            className="object-cover object-left md:object-center opacity-60 blur-[2px]"
+            /* FIX CONTRASTE 1: Aumentei a opacidade para 70% (opacity-70) 
+               para o banner "saltar" mais aos olhos. Reduzi o blur para 1px para mais nitidez.
+            */
+            className="object-cover object-left md:object-center opacity-70 blur-[1px]"
             priority
           />
-          {/* AJUSTE 2: Overlay Escuro (Linear Gradient) para dar contraste ("Blur mais escuro") */}
-          {/* Isso escurece a imagem para que ela não suma no fundo branco */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent mix-blend-multiply" />
+          
+          /* FIX CONTRASTE 2: Overlay Escuro Forte.
+             Como o fundo é claro e o print é claro, usamos um gradiente preto (from-black/60)
+             para criar separação visual.
+          */
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent mix-blend-multiply" />
         </motion.div>
 
-        {/* === LAYER 2: GRADIENTES DE TRANSIÇÃO (Para o Fundo Gelo) === */}
+        {/* === LAYER 2: GRADIENTES DE SUAVIZAÇÃO (Para o Fundo Gelo) === */}
         
-        {/* Gradiente inferior: Começa transparente e vai para o Gelo Sólido na base */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/60 to-transparent" />
+        {/* Gradiente inferior: Garante que a base se funda com o card */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/80 to-transparent" />
         
-        {/* Gradiente lateral: Garante a leitura do texto à direita/esquerda */}
-        {/* Ajustado para cobrir menos a imagem (via mais suave) */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#F8FAFC] via-[#F8FAFC]/80 to-transparent md:w-[80%]" />
+        {/* Gradiente lateral: Garante a leitura do texto, criando uma área sólida à esquerda */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#F8FAFC] via-[#F8FAFC]/95 to-transparent md:w-[80%]" />
 
         {/* === LAYER 3: CONTEÚDO === */}
         <motion.div 
@@ -61,7 +66,7 @@ export function ProjectDavi() {
             
             {/* Tag / Header */}
             <div className="flex items-center gap-4 mb-6">
-              {/* Roxo Violeta para a Tag de destaque (Davi Pro) */}
+              {/* Roxo Violeta para a Tag de destaque */}
               <span className="px-3 py-1 rounded-full border border-[#7C3AED]/40 bg-[#7C3AED]/10 text-[#7C3AED] text-xs font-mono tracking-widest uppercase font-bold backdrop-blur-md">
                 Case Study 004
               </span>

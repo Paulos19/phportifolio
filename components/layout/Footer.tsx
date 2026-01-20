@@ -1,38 +1,50 @@
 import Link from "next/link";
+import { Github, Linkedin, Instagram } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="relative min-h-screen bg-neutral-950 flex flex-col items-center justify-center overflow-hidden">
-      
-      {/* Background Decorativo */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-         <div className="w-[80vw] h-[80vw] bg-emerald-500/5 rounded-full blur-[150px]" />
-      </div>
-
-      <div className="container px-4 relative z-10 flex flex-col items-center">
+    <footer className="bg-zinc-950 text-white pt-24 pb-8 border-t border-zinc-900">
+      <div className="container mx-auto px-6">
         
-        <p className="text-neutral-500 font-mono text-sm mb-8 tracking-widest uppercase">
-            Designed & Engineered by
-        </p>
-
-        {/* BIG NAME REVEAL */}
-        <h1 className="text-[12vw] leading-[0.8] font-serif font-bold text-white tracking-tighter text-center mix-blend-overlay hover:mix-blend-normal hover:text-white transition-all duration-700 cursor-default">
-          PAULO<br/>HENRIQUE
-        </h1>
-
-        <div className="flex gap-8 mt-16">
-            {["Github", "LinkedIn", "Instagram", "Email"].map((social) => (
-                <Link key={social} href="#" className="text-neutral-400 hover:text-emerald-400 text-sm font-bold uppercase tracking-widest transition-colors">
-                    {social}
-                </Link>
-            ))}
+        {/* Topo do Footer */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-10">
+            <div>
+                <h2 className="text-[12vw] leading-[0.8] font-black tracking-tighter text-zinc-800 select-none">
+                    PH.DEV
+                </h2>
+            </div>
+            <div className="flex gap-4">
+                 <SocialLink href="https://github.com/Paulos19" icon={Github} />
+                 <SocialLink href="https://linkedin.com/in/paulo-henrique" icon={Linkedin} /> {/* Ajuste a URL se necessário */}
+                 <SocialLink href="https://instagram.com" icon={Instagram} />
+            </div>
         </div>
 
-        <div className="absolute bottom-10 text-neutral-600 text-xs font-mono">
-            © 2026. SÃO PAULO, BRASIL.
-        </div>
+        {/* Linha Divisória */}
+        <div className="h-px w-full bg-zinc-900 mb-8" />
 
+        {/* Bottom */}
+        <div className="flex flex-col md:flex-row justify-between items-center text-zinc-500 text-sm gap-4">
+            <p>© 2026 Paulo Henrique Araújo. All rights reserved.</p>
+            <div className="flex gap-6">
+                <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            </div>
+            <p>Brasília, DF • Brasil</p>
+        </div>
       </div>
     </footer>
   );
+}
+
+function SocialLink({ href, icon: Icon }: any) {
+    return (
+        <Link 
+            href={href} 
+            target="_blank"
+            className="w-12 h-12 border border-zinc-800 rounded-full flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300"
+        >
+            <Icon size={20} />
+        </Link>
+    )
 }
