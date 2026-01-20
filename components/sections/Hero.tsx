@@ -6,29 +6,35 @@ import Image from "next/image";
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Hook para capturar o progresso do scroll apenas dentro desta div gigante
+  // O scroll observa o container pai (definido no page.tsx com 300vh)
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"], // Começa no topo, termina quando o topo da div sair da tela
+    offset: ["start start", "end end"],
   });
 
-  // Transformações baseadas no scroll (0 a 1)
+  // === SINCRONIA DA ANIMAÇÃO ===
+  // A animação acontece nos primeiros 60% do scroll (0 a 0.6).
+  // Do 0.6 ao 1.0, a Hero fica estática, esperando ser coberta.
+
+  // 1. Reveal da Cor: De P&B (1) para Colorido (0)
+  const grayscaleOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   
-  // 1. A imagem P&B vai sumindo (revelando a colorida por trás)
-  const grayscaleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  // 2. Zoom do Nome: Cresce suavemente
+  const textScale = useTransform(scrollYProgress, [0, 0.6], [1, 1.25]);
   
-  // 2. O texto se move levemente e muda de escala
-  const textScale = useTransform(scrollYProgress, [0, 0.6], [1, 4.5]);
-  const textOpacity = useTransform(scrollYProgress, [0.4, 0.6], [1, 0]); // Texto some ao dar zoom excessivo
+  // 3. Movimento Vertical do Nome: Sobe um pouco para dar dinamismo
+  const textY = useTransform(scrollYProgress, [0, 0.6], ["0%", "10%"]);
   
-  // 3. Efeito de textura/mask no texto (O texto começa sólido e vira vazado/máscara)
-  const textY = useTransform(scrollYProgress, [0, 0.5], ["0%", "20%"]);
+  // 4. Opacidade do Texto:
+  // IMPORTANTE: O texto NUNCA some. Ele fica opacidade 1 até ser coberto.
+  // Começa com 0.9 (levemente transparente) e vai para 1 (totalmente nítido).
+  const textOpacity = useTransform(scrollYProgress, [0, 0.2], [0.9, 1]);
 
   return (
-    <section ref={containerRef} className="h-[250vh] relative bg-neutral-950">
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+    // h-full preenche o container 'sticky' do pai
+    <section ref={containerRef} className="h-full w-full relative bg-neutral-950 overflow-hidden">
         
-        {/* === LAYER 1: Imagem Colorida (Base) === */}
+        {/* === LAYER 1: Imagem Colorida (Base - Fica por baixo) === */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/heroImage.png"
@@ -37,11 +43,11 @@ export function Hero() {
             className="object-cover object-center"
             priority
           />
-          {/* Overlay gradiente para garantir leitura do footer da imagem se necessário */}
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+          {/* Vinheta leve para garantir contraste do texto */}
+          <div className="absolute inset-0 bg-neutral-950/20" />
         </div>
 
-        {/* === LAYER 2: Imagem P&B (Cobre a colorida e some com scroll) === */}
+        {/* === LAYER 2: Imagem P&B (Cobre a colorida e desaparece) === */}
         <motion.div 
           style={{ opacity: grayscaleOpacity }}
           className="absolute inset-0 z-10 pointer-events-none"
@@ -56,35 +62,28 @@ export function Hero() {
         </motion.div>
 
         {/* === LAYER 3: Texto Tipográfico === */}
-        <motion.div 
-          style={{ scale: textScale, opacity: textOpacity, y: textY }}
-          className="relative z-20 text-center mix-blend-overlay"
-        >
-          <h1 className="text-[12vw] leading-none font-serif font-bold text-white tracking-tighter uppercase opacity-90">
-            Paulo
-            <br />
-            Henrique
-          </h1>
-        </motion.div>
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
+          <motion.div 
+            style={{ scale: textScale, y: textY, opacity: textOpacity }}
+            className="text-center mix-blend-overlay"
+          >
+            <h1 className="text-[13vw] leading-[0.8] font-serif font-bold text-white tracking-tighter uppercase opacity-90">
+              Paulo
+              <br />
+              Henrique
+            </h1>
+          </motion.div>
+        </div>
 
-        {/* === LAYER 4: Detalhes Técnicos (Overlay fixo que não dá zoom) === */}
+        {/* Detalhes Técnicos (Rodapé da Hero) */}
         <motion.div 
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]) }}
+          style={{ opacity: useTransform(scrollYProgress, [0, 0.4], [1, 0]) }}
           className="absolute bottom-12 left-12 z-30 text-neutral-200 hidden md:block"
         >
-          <p className="font-mono text-xs mb-1">LOCALIZAÇÃO</p>
-          <p className="font-bold">BRASIL</p>
+          <p className="font-mono text-xs mb-1 tracking-widest text-emerald-400">LOCALIZAÇÃO</p>
+          <p className="font-bold text-xl">SÃO PAULO, BR</p>
         </motion.div>
 
-        <motion.div 
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.2], [1, 0]) }}
-          className="absolute bottom-12 right-12 z-30 text-right text-neutral-200 hidden md:block"
-        >
-          <p className="font-mono text-xs mb-1">STACK PRINCIPAL</p>
-          <p className="font-bold">NEXT.JS / N8N / TAILWIND</p>
-        </motion.div>
-
-      </div>
     </section>
   );
 }
