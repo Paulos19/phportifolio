@@ -18,8 +18,8 @@ import { ProjectCard } from "@/components/ui/project-card";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/sections/hero";
-import { About } from "@/components/sections/about";
+import { Hero } from "@/components/sections/Hero";
+import { About } from "@/components/sections/About";
 
 const projects = [
   {
