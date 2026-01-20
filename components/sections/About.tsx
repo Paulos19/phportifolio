@@ -1,110 +1,148 @@
 "use client";
-import { motion } from "framer-motion";
-import { Cpu, Code2, Zap, Database, Layout, Terminal, GraduationCap } from "lucide-react";
+
+import { useRef } from "react";
+import Image from "next/image";
+import { 
+  motion, 
+  useScroll, 
+  useTransform, 
+  useMotionTemplate, 
+  useMotionValue, 
+  useSpring 
+} from "framer-motion";
+import { ArrowRight, Terminal, Zap, Database } from "lucide-react";
 
 export function About() {
+  const targetRef = useRef<HTMLDivElement>(null);
+  
+  // Rastreia quando este componente entra na tela (viewport)
+  // offset: ["start end"] -> Começa quando o topo do About toca o fundo da tela
+  // ["end start"] -> Termina quando o fundo do About toca o topo da tela
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start end", "end end"], 
+  });
+
+  // === A MÁGICA DO SLIDE LATERAL ===
+  // Convertemos o movimento vertical natural (o elemento subindo) em horizontal.
+  // Quando o scrollProgress é 0 (topo do elemento no fundo da tela), x é 100% (fora à direita).
+  // Quando o scrollProgress é 1 (elemento ocupa toda a tela), x é 0% (centralizado).
+  const x = useTransform(scrollYProgress, [0, 1], ["100%", "0%"]);
+  
+  // Pequena escala para dar profundidade (efeito 3D sutil ao entrar)
+  const scale = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
+  
+  // Controle do Mouse (Manteve-se a lógica da "Lanterna")
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const smoothX = useSpring(mouseX, { stiffness: 250, damping: 25 });
+  const smoothY = useSpring(mouseY, { stiffness: 250, damping: 25 });
+
+  function handleMouseMove(e: React.MouseEvent) {
+    const { left, top } = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - left);
+    mouseY.set(e.clientY - top);
+  }
+
+  const maskImage = useMotionTemplate`radial-gradient(350px circle at ${smoothX}px ${smoothY}px, black, transparent)`;
+
   return (
-    // Removida altura fixa/sticky daqui. O pai no page.tsx controla isso.
-    // Adicionado padding vertical generoso para centralizar visualmente.
-    <section id="sobre" className="relative w-full min-h-screen flex items-center justify-center py-24 px-4 bg-neutral-950">
+    // O Container agora é exatamente 100vh (h-screen). 
+    // Usamos 'overflow-hidden' no layout pai para esconder o scroll horizontal.
+    <section ref={targetRef} className="relative h-screen w-full overflow-hidden pointer-events-none">
       
-      <div className="container relative z-10 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
-          {/* Coluna Esquerda: Impacto */}
-          <div className="space-y-8">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="space-y-4"
-            >
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono border border-emerald-500/20">
-                  STATUS: OPEN TO WORK
-                </span>
-                <span className="text-neutral-500 text-xs font-mono">
-                  SÃO PAULO • 26 ANOS
-                </span>
-              </div>
-              
-              <h3 className="text-5xl md:text-7xl font-bold text-white leading-tight font-serif">
-                Analista & <br/>
-                <span className="text-neutral-600">Arquiteto.</span>
-              </h3>
-            </motion.div>
+      {/* O Conteúdo Animado */}
+      <motion.div 
+        style={{ x, scale }}
+        className="relative w-full h-full bg-white pointer-events-auto shadow-[-50px_0_100px_rgba(0,0,0,0.5)]"
+        onMouseMove={handleMouseMove}
+      >
+        
+        {/* === LAYER 1: BASE (B&W) === */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/profileHero.png"
+            alt="Background"
+            fill
+            className="object-cover object-center grayscale contrast-125 opacity-20 md:opacity-100" 
+            priority
+          />
+          {/* Gradiente de Leitura (Esquerda -> Direita) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent w-[80%] z-10" />
+        </div>
 
-            <motion.div 
-               initial={{ opacity: 0 }}
-               whileInView={{ opacity: 1 }}
-               transition={{ delay: 0.2, duration: 0.8 }}
-               viewport={{ once: true }}
-               className="grid grid-cols-2 gap-4"
-            >
-              <Card 
-                icon={<GraduationCap className="w-5 h-5 text-purple-400" />}
-                title="Formação"
-                desc="Cursando ADS. Foco em Engenharia de Software."
-              />
-              <Card 
-                icon={<Zap className="w-5 h-5 text-yellow-400" />}
-                title="Performance"
-                desc="Aplicações otimizadas para alta escala."
-              />
-            </motion.div>
+        {/* === LAYER 2: REVEAL (Color + Signature) === */}
+        <motion.div 
+          className="absolute inset-0 z-10 bg-white"
+          style={{ maskImage, WebkitMaskImage: maskImage }}
+        >
+          {/* Textura de Fundo (Assinaturas) */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none flex flex-wrap content-center justify-center gap-32 rotate-[-5deg]">
+             {Array.from({ length: 40 }).map((_, i) => (
+                <span key={i} className="font-[family-name:var(--font-signature)] text-7xl text-violet-600 whitespace-nowrap select-none">
+                  Paulo Henrique
+                </span>
+             ))}
           </div>
+          {/* Imagem Colorida */}
+          <Image src="/profileHero.png" alt="Color Reveal" fill className="object-cover object-center" />
+        </motion.div>
 
-          {/* Coluna Direita: Bio & Stack */}
-          <motion.div 
-             initial={{ opacity: 0, x: 20 }}
-             whileInView={{ opacity: 1, x: 0 }}
-             transition={{ delay: 0.4, duration: 0.8 }}
-             viewport={{ once: true }}
-             className="space-y-8 bg-white/5 p-8 rounded-2xl border border-white/5 backdrop-blur-sm"
-          >
-             <p className="text-lg text-neutral-400 leading-relaxed">
-              Minha jornada técnica começou em <strong className="text-white">2023</strong>. 
-              Desde então, mergulhei na arquitetura de sistemas, unindo interfaces fluidas com backends robustos.
-              Não apenas escrevo código; construo soluções que resolvem problemas reais.
+        {/* === LAYER 3: CONTEÚDO (Texto) === */}
+        <div className="relative z-20 container mx-auto px-6 h-full flex flex-col justify-center">
+          <div className="max-w-2xl space-y-8 pl-4 md:pl-0">
+            
+            {/* Header */}
+            <div>
+                <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="flex items-center gap-3 mb-4"
+                >
+                    <span className="w-12 h-[2px] bg-zinc-900" />
+                    <span className="text-xs font-mono font-bold uppercase tracking-widest text-zinc-500">
+                        Quem sou eu
+                    </span>
+                </motion.div>
+                
+                <h2 className="text-6xl md:text-8xl font-black text-zinc-900 tracking-tighter leading-[0.85]">
+                TECH <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">
+                    ALCHEMIST.
+                </span>
+                </h2>
+            </div>
+
+            {/* Copy */}
+            <p className="text-xl text-zinc-600 font-light leading-relaxed max-w-lg">
+                Combinando a precisão da engenharia de software com a fluidez do design. Focado em <strong className="text-zinc-900">Next.js</strong> e automação inteligente.
             </p>
 
-            <div className="space-y-4 pt-4 border-t border-white/5">
-              <h4 className="text-sm font-mono text-neutral-500 uppercase tracking-widest">Arsenal Técnico</h4>
-              <div className="grid grid-cols-3 gap-3">
-                <TechBadge icon={<Layout />} label="Next.js 15" />
-                <TechBadge icon={<Code2 />} label="Tailwind v4" />
-                <TechBadge icon={<Terminal />} label="TypeScript" />
-                <TechBadge icon={<Database />} label="Prisma" />
-                <TechBadge icon={<Cpu />} label="N8N Auto" />
-                <TechBadge icon={<Zap />} label="Motion" />
-              </div>
+            {/* Grid de Specs */}
+            <div className="grid grid-cols-2 gap-6 py-4 border-t border-zinc-200">
+                <div>
+                    <h4 className="flex items-center gap-2 font-bold text-zinc-900 mb-1">
+                        <Terminal size={16} className="text-violet-600"/> Stack
+                    </h4>
+                    <p className="text-sm text-zinc-500">React, Next.js 15, Tailwind</p>
+                </div>
+                <div>
+                    <h4 className="flex items-center gap-2 font-bold text-zinc-900 mb-1">
+                        <Zap size={16} className="text-violet-600"/> Automação
+                    </h4>
+                    <p className="text-sm text-zinc-500">N8N, Webhooks, AI Agents</p>
+                </div>
             </div>
-          </motion.div>
 
+            <button className="flex items-center gap-3 text-zinc-900 font-bold border-b-2 border-zinc-900 pb-1 hover:text-violet-600 hover:border-violet-600 transition-colors">
+                Explorar Projetos <ArrowRight size={18} />
+            </button>
+
+          </div>
         </div>
-      </div>
+
+      </motion.div>
     </section>
-  );
-}
-
-function Card({ icon, title, desc }: { icon: any, title: string, desc: string }) {
-  return (
-    <div className="p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-      <div className="mb-3">{icon}</div>
-      <h4 className="font-bold text-white text-sm">{title}</h4>
-      <p className="text-xs text-neutral-500 mt-1 leading-relaxed">{desc}</p>
-    </div>
-  );
-}
-
-function TechBadge({ icon, label }: { icon: any, label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2 p-3 rounded bg-neutral-900 border border-white/5 text-neutral-400 hover:text-white hover:border-emerald-500/30 transition-all group text-center">
-      <span className="group-hover:text-emerald-400 transition-colors [&>svg]:w-5 [&>svg]:h-5">
-        {icon}
-      </span>
-      <span className="text-[10px] font-mono font-medium">{label}</span>
-    </div>
   );
 }

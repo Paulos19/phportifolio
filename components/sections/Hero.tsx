@@ -1,41 +1,89 @@
 "use client";
+
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import { 
+  motion, 
+  useScroll, 
+  useTransform, 
+  useMotionTemplate, 
+  useMotionValue,
+  useSpring
+} from "framer-motion";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // O scroll observa o container pai (definido no page.tsx com 300vh)
+  // Rastreia o scroll APENAS dentro desta section
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
+    offset: ["start start", "end start"],
   });
 
-  // === SINCRONIA DA ANIMAÇÃO ===
-  // A animação acontece nos primeiros 60% do scroll (0 a 0.6).
-  // Do 0.6 ao 1.0, a Hero fica estática, esperando ser coberta.
+  // === SINCRONIA FINA ===
+  // O texto termina de animar (separar e sumir) em 70% do scroll (0.7)
+  // Os 30% restantes são um respiro para o usuário ver a imagem antes da próxima seção subir.
+  
+  // Movimento: "Explosão" para as laterais
+  const xLeft = useTransform(scrollYProgress, [0, 0.7], ["0%", "-100%"]); 
+  const xRight = useTransform(scrollYProgress, [0, 0.7], ["0%", "100%"]);
+  
+  // Opacidade: O texto some um pouco antes de chegar na borda
+  const opacityText = useTransform(scrollYProgress, [0, 0.5], [1, 0]); 
+  
+  // Zoom suave na imagem de fundo para dar sensação de profundidade
+  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
-  // 1. Reveal da Cor: De P&B (1) para Colorido (0)
-  const grayscaleOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  
-  // 2. Zoom do Nome: Cresce suavemente
-  const textScale = useTransform(scrollYProgress, [0, 0.6], [1, 1.25]);
-  
-  // 3. Movimento Vertical do Nome: Sobe um pouco para dar dinamismo
-  const textY = useTransform(scrollYProgress, [0, 0.6], ["0%", "10%"]);
-  
-  // 4. Opacidade do Texto:
-  // IMPORTANTE: O texto NUNCA some. Ele fica opacidade 1 até ser coberto.
-  // Começa com 0.9 (levemente transparente) e vai para 1 (totalmente nítido).
-  const textOpacity = useTransform(scrollYProgress, [0, 0.2], [0.9, 1]);
+  // === EFEITO FLASHLIGHT (MOUSE) ===
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const smoothX = useSpring(mouseX, { stiffness: 500, damping: 50 });
+  const smoothY = useSpring(mouseY, { stiffness: 500, damping: 50 });
+
+  function handleMouseMove(e: React.MouseEvent) {
+    const { left, top } = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - left);
+    mouseY.set(e.clientY - top);
+  }
+
+  const maskImage = useMotionTemplate`radial-gradient(300px circle at ${smoothX}px ${smoothY}px, black, transparent)`;
 
   return (
-    // h-full preenche o container 'sticky' do pai
-    <section ref={containerRef} className="h-full w-full relative bg-neutral-950 overflow-hidden">
+    // Altura de 150vh: Garante tempo de scroll para animação acontecer antes da próxima seção chegar
+    <section 
+      ref={containerRef} 
+      className="relative h-[150vh] w-full bg-background" 
+    >
+      {/* O conteúdo visual é STICKY e ocupa exatamente 100vh */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
         
-        {/* === LAYER 1: Imagem Colorida (Base - Fica por baixo) === */}
-        <div className="absolute inset-0 z-0">
+        {/* === LAYER 1: BASE GRAYSCALE === */}
+        <motion.div 
+          style={{ scale: scaleImage }}
+          className="absolute inset-0 z-0 opacity-40 grayscale contrast-125 origin-center"
+        >
+           <Image
+            src="/heroImage.png"
+            alt="Paulo Henrique Grayscale"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        </motion.div>
+
+        {/* === LAYER 2: TEXTURA DIGITAL === */}
+        <div className="absolute inset-0 z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+
+        {/* === LAYER 3: COLOR REVEAL (MASK) === */}
+        <motion.div 
+          className="absolute inset-0 z-20 hidden md:block"
+          style={{ 
+            scale: scaleImage, // Sincroniza o zoom com a layer de baixo
+            maskImage, 
+            WebkitMaskImage: maskImage,
+          }}
+          onMouseMove={handleMouseMove}
+        >
           <Image
             src="/heroImage.png"
             alt="Paulo Henrique Color"
@@ -43,47 +91,50 @@ export function Hero() {
             className="object-cover object-center"
             priority
           />
-          {/* Vinheta leve para garantir contraste do texto */}
-          <div className="absolute inset-0 bg-neutral-950/20" />
-        </div>
-
-        {/* === LAYER 2: Imagem P&B (Cobre a colorida e desaparece) === */}
-        <motion.div 
-          style={{ opacity: grayscaleOpacity }}
-          className="absolute inset-0 z-10 pointer-events-none"
-        >
-          <Image
-            src="/heroImage.png"
-            alt="Paulo Henrique BW"
-            fill
-            className="object-cover object-center grayscale brightness-90 contrast-125"
-            priority
-          />
         </motion.div>
 
-        {/* === LAYER 3: Texto Tipográfico === */}
-        <div className="absolute inset-0 z-20 flex items-center justify-center">
+        {/* === LAYER 4: TIPOGRAFIA (PARALLAX) === */}
+        <div className="relative z-30 w-full px-4 mix-blend-difference text-white pointer-events-none">
           <motion.div 
-            style={{ scale: textScale, y: textY, opacity: textOpacity }}
-            className="text-center mix-blend-overlay"
+            style={{ opacity: opacityText }}
+            className="flex flex-col items-center justify-center"
           >
-            <h1 className="text-[13vw] leading-[0.8] font-serif font-bold text-white tracking-tighter uppercase opacity-90">
-              Paulo
-              <br />
-              Henrique
-            </h1>
+            {/* PAULO (Vai para esquerda) */}
+            <motion.h1 
+              style={{ x: xLeft }}
+              className="text-[12vw] md:text-[14vw] font-black leading-[0.8] tracking-tighter"
+            >
+              PAULO
+            </motion.h1>
+            
+            {/* HENRIQUE (Vai para direita) */}
+            <motion.h1 
+              style={{ x: xRight }}
+              className="text-[12vw] md:text-[14vw] font-black leading-[0.8] tracking-tighter text-outline-transparent"
+            >
+              HENRIQUE
+            </motion.h1>
+
+            {/* Informações Extras */}
+            <div className="mt-12 flex gap-8 text-sm md:text-base font-mono tracking-widest uppercase opacity-80">
+              <span>Dev. Frontend</span>
+              <span>•</span>
+              <span>26 Anos</span>
+              <span>•</span>
+              <span>Brasil</span>
+            </div>
           </motion.div>
         </div>
 
-        {/* Detalhes Técnicos (Rodapé da Hero) */}
+        {/* Scroll Indicator (Desaparece logo no início do scroll) */}
         <motion.div 
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.4], [1, 0]) }}
-          className="absolute bottom-12 left-12 z-30 text-neutral-200 hidden md:block"
+          style={{ opacity: useTransform(scrollYProgress, [0, 0.1], [1, 0]) }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 animate-pulse"
         >
-          <p className="font-mono text-xs mb-1 tracking-widest text-emerald-400">LOCALIZAÇÃO</p>
-          <p className="font-bold text-xl">SÃO PAULO, BR</p>
+          <div className="w-[1px] h-24 bg-gradient-to-b from-transparent via-white to-transparent" />
         </motion.div>
 
+      </div>
     </section>
   );
 }

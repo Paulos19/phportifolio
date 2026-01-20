@@ -1,27 +1,27 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google"; // Importando fontes
+import { Inter, Dancing_Script } from "next/font/google"; // Adicione Dancing_Script
 import "./globals.css";
-import { SmoothScroll } from "@/components/providers/SmoothScroll"; // Vamos criar isso
+import SmoothScroll from "@/components/providers/smooth-scroll";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+// Fonte para a textura de assinatura
+const signatureFont = Dancing_Script({ subsets: ["latin"], variable: "--font-signature" });
 
 export const metadata: Metadata = {
   title: "Paulo Henrique | Creative Developer",
-  description: "Portfolio interativo de Paulo Henrique, estudante de ADS e desenvolvedor Full Stack.",
+  description: "Portfolio Profissional - ADS",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="pt-BR" className="dark"> 
-      <body className={`${inter.variable} ${playfair.variable} bg-neutral-950 text-neutral-100 antialiased overflow-x-hidden`}>
-        <SmoothScroll>
-          {children}
-        </SmoothScroll>
+    <html lang="pt-br" className="dark">
+      <body className={`${inter.variable} ${signatureFont.variable} font-sans antialiased`}>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

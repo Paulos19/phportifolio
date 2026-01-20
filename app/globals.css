@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
-/* Configuração de Tema (Tailwind v4)
-  Mapeamos as variáveis do layout.tsx (Inter/Playfair) para as classes utilitárias
-*/
+/* Configuração de Tema (Tailwind v4) */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
-  /* AQUI: Conectando as fontes do nosso Layout */
+  /* FONTES: Conectando as variáveis do layout.tsx */
   --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
+  --font-signature: var(--font-signature); /* Adicionado para a seção Sobre Mim */
   
+  /* Cores Shadcn/UI Mapeadas */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -40,6 +40,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -47,6 +49,19 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  
+  /* Animações Customizadas (opcional, mas útil para o futuro) */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0 }
+    to { height: var(--radix-accordion-content-height) }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height) }
+    to { height: 0 }
+  }
 }
 
 /* Variáveis de Cor (OKLCH - High Dynamic Range) */
