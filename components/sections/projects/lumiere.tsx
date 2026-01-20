@@ -20,7 +20,7 @@ export function ProjectLumiere() {
 
   return (
     /* INICIO DA SECTION */
-    <section className="sticky top-0 h-screen w-full overflow-hidden bg-[#0A1410]">
+    <section className="w-full overflow-hidden bg-[#0A1410]">
       
       <div ref={containerRef} className="relative h-full w-full flex items-center">
         
