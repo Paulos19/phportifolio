@@ -4,7 +4,6 @@ import Lenis from 'lenis';
 import { useScroll } from "framer-motion";
 
 import { Navbar } from "@/components/layout/navbar";
-import { Hero } from "@/components/sections/hero"; 
 import { About } from "@/components/sections/about";
 import { Stack } from "@/components/sections/stack";
 
@@ -20,6 +19,7 @@ import { ProjectCard } from "@/components/ui/project-card";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/layout/Footer";
+import { Hero } from "@/components/sections/hero";
 
 const projects = [
   {
